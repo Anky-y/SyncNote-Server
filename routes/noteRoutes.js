@@ -7,8 +7,8 @@ const router = express.Router();
 router.post("/create", async (req, res) => {
   console.log(req.body);
   try {
-    const { title, content, updatedAt, synced } = req.body;
-    const newNote = new Note({ title, content, updatedAt, synced });
+    const { id, title, content, updatedAt, synced } = req.body;
+    const newNote = new Note({ _id: id, title, content, updatedAt, synced });
     await newNote.save();
     res.status(201).json({ message: "Note created", note: newNote });
   } catch (err) {
@@ -76,7 +76,7 @@ router.post("/sync", async (req, res) => {
   try {
     const { id, title, content, updatedAt } = req.body;
 
-    const newNote = new Note({ id, title, content, updatedAt, synced: 1 });
+    const newNote = new Note({ _id: id, title, content, updatedAt, synced: 1 });
     await newNote.save();
 
     res.status(200).json(newNote);
