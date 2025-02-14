@@ -7,8 +7,15 @@ const router = express.Router();
 router.post("/create", async (req, res) => {
   console.log(req.body);
   try {
-    const { id, title, content, updatedAt, synced } = req.body;
-    const newNote = new Note({ _id: id, title, content, updatedAt, synced });
+    const { id, title, content, updatedAt, synced, bgColor } = req.body;
+    const newNote = new Note({
+      _id: id,
+      title,
+      content,
+      updatedAt,
+      synced,
+      bgColor,
+    });
     await newNote.save();
     res.status(201).json({ message: "Note created", note: newNote });
   } catch (err) {
@@ -43,14 +50,30 @@ router.get("/:id", async (req, res) => {
 // Update a note
 router.put("/:id", async (req, res) => {
   try {
-    const { title, content, updatedAt, synced } = req.body;
+    const updatedFields = req.body;
+    // Check if the note exists
+    const existingNote = await Note.findById(req.params.id);
+    if (!existingNote) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    const updatedNoteData = {
+      ...existingNote.toObject(), // Convert Mongoose model to plain object
+      ...updatedFields,
+      synced: 1, // Ensure the note is marked as synced
+    };
+
+    // Update only the fields that were sent in the request
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { title, content, updatedAt, synced },
+      updatedNoteData, // Only update provided fields
       { new: true } // Return the updated note
     );
-    if (!updatedNote)
+
+    if (!updatedNote) {
       return res.status(404).json({ message: "Note not found" });
+    }
+
     res.status(200).json({ message: "Note updated", note: updatedNote });
   } catch (err) {
     console.error(err);
@@ -74,9 +97,16 @@ router.delete("/:id", async (req, res) => {
 // API route to save notes to MongoDB
 router.post("/sync", async (req, res) => {
   try {
-    const { id, title, content, updatedAt } = req.body;
+    const { id, title, content, bgColor, updatedAt } = req.body;
 
-    const newNote = new Note({ _id: id, title, content, updatedAt, synced: 1 });
+    const newNote = new Note({
+      _id: id,
+      title,
+      content,
+      updatedAt,
+      bgColor,
+      synced: 1,
+    });
     await newNote.save();
 
     res.status(200).json(newNote);

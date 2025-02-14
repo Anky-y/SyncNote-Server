@@ -5,7 +5,8 @@ const NoteSchema = new mongoose.Schema({
   title: { type: String, unique: true },
   content: { type: String },
   updatedAt: { type: Date },
-  synced: { type: Boolean },
+  bgColor: { type: String },
+  synced: { type: Number },
 });
 
 module.exports = mongoose.model("Note", NoteSchema);
