@@ -7,9 +7,10 @@ const router = express.Router();
 router.post("/create", async (req, res) => {
   console.log(req.body);
   try {
-    const { id, title, content, updatedAt, synced, bgColor } = req.body;
+    const { id, userId, title, content, updatedAt, synced, bgColor } = req.body;
     const newNote = new Note({
       _id: id,
+      userId,
       title,
       content,
       updatedAt,
@@ -97,10 +98,11 @@ router.delete("/:id", async (req, res) => {
 // API route to save notes to MongoDB
 router.post("/sync", async (req, res) => {
   try {
-    const { id, title, content, bgColor, updatedAt } = req.body;
+    const { id, userId, title, content, bgColor, updatedAt } = req.body;
 
     const newNote = new Note({
       _id: id,
+      userId,
       title,
       content,
       updatedAt,
