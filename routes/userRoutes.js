@@ -13,9 +13,9 @@ router.put("/update", async (req, res) => {
     }
     // Find the user and update the username
     const user = await User.findOneAndUpdate(
-      { _id: userId }, // ✅ Correct filter syntax
+      { _id: userId }, //  Correct filter syntax
       { username: newUsername },
-      { new: true } // ✅ Return the updated user
+      { new: true } //  Return the updated user
     );
 
     if (!user) {
@@ -35,4 +35,33 @@ router.put("/update", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// Update Sync Status
+router.put("/sync-status", async (req, res) => {
+  console.log(req.body);
+  try {
+    const { sync, userId } = req.body;
+
+    if (typeof sync !== "boolean" || !userId) {
+      return res.status(400).json({ message: "Missing or invalid sync status or userId" });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { sync },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Sync status updated", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 module.exports = router;
+
+

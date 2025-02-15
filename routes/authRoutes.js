@@ -14,9 +14,12 @@ router.post("/register", async (req, res) => {
     if (userExists)
       return res.status(400).json({ message: "Username already taken" });
 
-    const user = new User({ username, password });
+    const user = new User({ username, password, sync: true });
     await user.save();
-    res.status(201).json({ message: "User registered" });
+    res.status(201).json({
+      message: "User registered",
+      user: { id: user._id, username: user.username },
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
