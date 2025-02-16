@@ -45,9 +45,31 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
     res.json({
       message: "Logged in",
+      token,
       user: { id: user._id, username: user.username },
     });
   } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/verify", (req, res) => {
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      res.json({ message: "Token is valid", userId: decoded.id });
+    });
+  } catch (error) {
+    console.error("Token verification error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
