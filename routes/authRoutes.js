@@ -86,8 +86,15 @@ router.get("/verify", (req, res) => {
 
 // Logout User
 router.post("/logout", (req, res) => {
-  res.cookie("token", "", { maxAge: 0 });
-  res.json({ message: "Logged out" });
+   try {
+     // Clear the token cookie by setting it to null
+     res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
+
+     res.json({ message: "Logged out successfully" });
+   } catch (err) {
+     console.error("Error during logout:", err);
+     res.status(500).json({ message: "Server error" });
+   }
 });
 
 module.exports = router;
