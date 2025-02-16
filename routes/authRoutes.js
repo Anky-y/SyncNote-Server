@@ -9,15 +9,25 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   console.log(req.body);
   try {
-    const { username, password } = req.body;
+    const { username, password, sync } = req.body;
     const userExists = await User.findOne({ username });
     if (userExists)
       return res.status(400).json({ message: "Username already taken" });
 
-    const user = new User({ username, password, sync: true });
+    const user = new User({ username, password, sync: sync });
     await user.save();
+
+    // Generate JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // Send token in cookies
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
+
     res.status(201).json({
       message: "User registered",
+      token,
       user: { id: user._id, username: user.username },
     });
   } catch (err) {
