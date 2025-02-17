@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     res.status(201).json({
       message: "User registered",
       token,
-      user: { id: user._id, username: user.username },
+      user: { id: user._id, username: user.username, sync: user.sync },
     });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -56,7 +56,7 @@ router.post("/login", async (req, res) => {
     res.json({
       message: "Logged in",
       token,
-      user: { id: user._id, username: user.username },
+      user: { id: user._id, username: user.username, sync: user.sync },
     });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -86,15 +86,15 @@ router.get("/verify", (req, res) => {
 
 // Logout User
 router.post("/logout", (req, res) => {
-   try {
-     // Clear the token cookie by setting it to null
-     res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
+  try {
+    // Clear the token cookie by setting it to null
+    res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
 
-     res.json({ message: "Logged out successfully" });
-   } catch (err) {
-     console.error("Error during logout:", err);
-     res.status(500).json({ message: "Server error" });
-   }
+    res.json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Error during logout:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;
