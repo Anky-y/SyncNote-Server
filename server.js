@@ -18,6 +18,6 @@ mongoose
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/notes", require("./routes/noteRoutes"));
-app.use("/user", require("./routes/userRoutes"));
+app.use("/api/user", require("./routes/userRoutes"));
 
 app.listen(5000, () => console.log("Server running on port 5000"));
