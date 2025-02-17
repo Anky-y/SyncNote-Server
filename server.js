@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 
 app.use(cookieParser());
 
@@ -18,6 +18,6 @@ mongoose
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/notes", require("./routes/noteRoutes"));
-app.use("/api/user", require("./routes/userRoutes"));
+app.use("/user", require("./routes/userRoutes"));
 
 app.listen(5000, () => console.log("Server running on port 5000"));
