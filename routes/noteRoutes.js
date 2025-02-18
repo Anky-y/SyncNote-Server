@@ -25,10 +25,14 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Get all notes
-router.get("/", async (req, res) => {
+// Get notes for a specific user
+router.get("/:userId", async (req, res) => {
   try {
-    const notes = await Note.find();
+    const { userId } = req.params;
+    const notes = await Note.find({ userId });
+    if (notes.length === 0) {
+      return res.status(404).json({ message: "No notes found for this user" });
+    }
     res.status(200).json(notes);
   } catch (err) {
     console.error(err);
@@ -97,6 +101,7 @@ router.delete("/:id", async (req, res) => {
 
 // API route to save notes to MongoDB
 router.post("/sync", async (req, res) => {
+  console.log("in sync");
   try {
     const { id, userId, title, content, bgColor, updatedAt } = req.body;
 
